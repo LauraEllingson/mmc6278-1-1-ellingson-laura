@@ -23,11 +23,11 @@ program
         return;
       }
 
-      // Select a random quote from the array
+      // Select a random quote 
       const randomIndex = Math.floor(Math.random() * quotes.length);
       const [quote, author] = quotes[randomIndex].split("|");
 
-      // Handle cases where author might be empty or not present
+      // Anonymous when no author is
       const formattedAuthor = author && author.trim() ? author.trim() : "Anonymous";
 
       // Log the quote and author to the console
@@ -39,7 +39,7 @@ program
   });
 
 
-  program
+program
   .command("addQuote <quote> [author]")
   .description("Adds a quote to the quotes file")
   .action(async (quote, author) => {
@@ -47,7 +47,7 @@ program
       // Default to "Anonymous" if no author is provided
       const authorToSave = author ? author.trim() : "Anonymous";
       const quoteToSave = quote.trim();
-      
+
       // Prepare the new quote with the author
       const newQuote = `${quoteToSave}|${authorToSave}`;
 
