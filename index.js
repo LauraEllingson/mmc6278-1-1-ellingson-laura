@@ -12,23 +12,55 @@ program
   .command("getQuote")
   .description("Retrieves a random quote")
   .action(async () => {
-    // TODO: Pull a random quote from the quotes.txt file
-    // console log the quote and author
-    // You may style the text with chalk as you wish
+    try {
+      // Read the quotes.txt file
+      const data = await fs.readFile("quotes.txt", "utf-8");
+
+      // Split the data into an array of lines and filter out any empty lines
+      const quotes = data.split("\n").filter((line) => line.trim() !== "");
+      if (quotes.length === 0) {
+        console.log(chalk.yellow("No quotes available."));
+        return;
+      }
+
+      // Select a random quote from the array
+      const randomIndex = Math.floor(Math.random() * quotes.length);
+      const [quote, author] = quotes[randomIndex].split("|");
+
+      // Handle cases where author might be empty or not present
+      const formattedAuthor = author && author.trim() ? author.trim() : "Anonymous";
+
+      // Log the quote and author to the console
+      console.log(chalk.green.bold(quote.trim())); // Display the quote in green and bold
+      console.log(chalk.blue(`- ${author.trim()}`)); // Display the author in blue
+    } catch (err) {
+      console.error(chalk.red("Error reading the quotes file."), err);
+    }
   });
 
-program
+
+  program
   .command("addQuote <quote> [author]")
-  .description("adds a quote to the quote file")
+  .description("Adds a quote to the quotes file")
   .action(async (quote, author) => {
-    // TODO: Add the quote and author to the quotes.txt file
-    // If no author is provided,
-    // save the author as "Anonymous".
-    // After the quote/author is saved,
-    // alert the user that the quote was added.
-    // You may style the text with chalk as you wish
-    // HINT: You can store both author and quote on the same line using
-    // a separator like pipe | and then using .split() when retrieving
+    try {
+      // Default to "Anonymous" if no author is provided
+      const authorToSave = author ? author.trim() : "Anonymous";
+      const quoteToSave = quote.trim();
+      
+      // Prepare the new quote with the author
+      const newQuote = `${quoteToSave}|${authorToSave}`;
+
+      // Append the new quote to the quotes.txt file
+      await fs.appendFile("quotes.txt", `\n${newQuote}`);
+
+      // Alert the user that the quote was added
+      console.log(chalk.green("Quote added successfully!"));
+    } catch (err) {
+      console.error(chalk.red("Error adding the quote to the file."), err);
+    }
   });
+
 
 program.parse();
+
